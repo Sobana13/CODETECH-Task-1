@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather Forecast App</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body{
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+    }
+
+    .container{
+      width:350px;
+      background:#fff;
+      padding:25px;
+      border-radius:20px;
+      text-align:center;
+      box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    h1{
+      margin-bottom:20px;
+      color:#333;
+    }
+
+    .search-box{
+      display:flex;
+      gap:10px;
+      margin-bottom:20px;
+    }
+
+    .search-box input{
+      flex:1;
+      padding:10px;
+      border:2px solid #ddd;
+      border-radius:10px;
+      outline:none;
+      font-size:16px;
+    }
+
+    .search-box button{
+      padding:10px 15px;
+      border:none;
+      border-radius:10px;
+      background:#4facfe;
+      color:#fff;
+      cursor:pointer;
+      font-size:16px;
+      transition:0.3s;
+    }
+
+    .search-box button:hover{
+      background:#008cff;
+    }
+
+    .weather-box img{
+      width:100px;
+    }
+
+    .temp{
+      font-size:45px;
+      font-weight:bold;
+      color:#333;
+    }
+
+    .city{
+      font-size:28px;
+      color:#555;
+      margin-bottom:10px;
+    }
+
+    .details{
+      display:flex;
+      justify-content:space-between;
+      margin-top:20px;
+    }
+
+    .details div{
+      background:#f1f1f1;
+      padding:10px;
+      border-radius:10px;
+      width:45%;
+    }
+
+    .error{
+      color:red;
+      margin-top:10px;
+      display:none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Weather App</h1>
+
+    <div class="search-box">
+      <input type="text" id="cityInput" placeholder="Enter city name">
+      <button onclick="getWeather()">Search</button>
+    </div>
+
+    <div class="weather-box">
+      <img id="weatherIcon" src="" alt="">
+      <div class="temp" id="temperature">--°C</div>
+      <div class="city" id="city">City Name</div>
+
+      <div class="details">
+        <div>
+          <h3 id="humidity">--%</h3>
+          <p>Humidity</p>
+        </div>
+
+        <div>
+          <h3 id="wind">-- km/h</h3>
+          <p>Wind Speed</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="error" id="error">
+      City not found!
+    </div>
+  </div>
+
+  <script>
+    const apiKey = "YOUR_API_KEY";
+
+    async function getWeather() {
+
+      const city = document.getElementById("cityInput").value;
+
+      if(city === ""){
+        alert("Please enter city name");
+        return;
+      }
+
+      const apiURL =
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+
+      const response = await fetch(apiURL);
+
+      if(response.status == 404){
+        document.getElementById("error").style.display = "block";
+        return;
+      }
+
+      const data = await response.json();
+
+      document.getElementById("city").innerHTML = data.name;
+      document.getElementById("temperature").innerHTML =
+        Math.round(data.main.temp) + "°C";
+
+      document.getElementById("humidity").innerHTML =
+        data.main.humidity + "%";
+
+      document.getElementById("wind").innerHTML =
+        data.wind.speed + " km/h";
+
+      const weatherMain = data.weather[0].main;
+      const icon = document.getElementById("weatherIcon");
+
+      if(weatherMain == "Clouds"){
+        icon.src =
+          "https://cdn-icons-png.flaticon.com/512/414/414825.png";
+      }
+      else if(weatherMain == "Clear"){
+        icon.src =
+          "https://cdn-icons-png.flaticon.com/512/869/869869.png";
+      }
+      else if(weatherMain == "Rain"){
+        icon.src =
+          "https://cdn-icons-png.flaticon.com/512/3351/3351979.png";
+      }
+      else if(weatherMain == "Snow"){
+        icon.src =
+          "https://cdn-icons-png.flaticon.com/512/642/642102.png";
+      }
+      else{
+        icon.src =
+          "https://cdn-icons-png.flaticon.com/512/1779/1779940.png";
+      }
+
+      document.getElementById("error").style.display = "none";
+    }
+  </script>
+
+</body>
+</html>
